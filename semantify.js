@@ -47,7 +47,7 @@ function SemantifyIt(key)
      *
      * @var boolean
      */
-    var debug = true;
+    var debug = false;
     var step = 0;
 
     /**
@@ -237,7 +237,6 @@ function SemantifyIt(key)
 
 
         if(jquery){
-
 
             jQuery.ajax({
                 url: url,
