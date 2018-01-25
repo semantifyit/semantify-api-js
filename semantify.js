@@ -163,11 +163,11 @@ function SemantifyIt(key)
      * @return string return content
      * @throws Exception
      */
-    function get (url)
+    function get (url, callback)
     {
 
         //if allow url fopen is allowed we will use file_get_contents otherwise curl
-        var content = curl("GET", url);
+        var content = curl("GET", url, undefined, callback);
 
         //console.log(content);
 
@@ -183,10 +183,10 @@ function SemantifyIt(key)
 
     }
 
-    function post (url, params)
+    function post (url, params, callback)
     {
         var action = "POST";
-        var content = curl(action, url, params);
+        var content = curl(action, url, params, callback);
 
         if (content === false) {
             throw new Error('Error posting content to '  + "" +  url);
@@ -200,10 +200,10 @@ function SemantifyIt(key)
 
     }
 
-    function patch (url, params)
+    function patch (url, params, callback)
     {
         var action = "PATCH";
-        var content = curl(action, url, params);
+        var content = curl(action, url, params, callback);
 
         if (content === false) {
             throw new Error('Error patching content to '  + "" +  url);
@@ -222,7 +222,7 @@ function SemantifyIt(key)
     }
 
 
-    function curl (type, url, params)
+    function curl (type, url, params, callback)
     {
         var response = "";
 
@@ -250,6 +250,9 @@ function SemantifyIt(key)
                 },
                 success: function(data){
                     response = data;
+                    if(callback!==undefined){
+                        callback(data);
+                    }
                 },
                 error: function (request, status, error) {
                     if(error){
@@ -259,6 +262,9 @@ function SemantifyIt(key)
             });
 
         }else{
+
+
+
 
         }
 
@@ -307,7 +313,7 @@ function SemantifyIt(key)
      * @param array $params
      * @return string
      */
-    function transport (type, path, params)
+    function transport (type, path, params, callback)
     {
         /* set aparams to array if they are not initialized */
         if(typeof params === "undefined"){
@@ -336,7 +342,8 @@ function SemantifyIt(key)
                     }
 
                     var fullurl = url +  query;
-                    return get(fullurl);
+
+                    return get(fullurl, callback);
 
                 } catch (/*Error*/ e) {
 
@@ -354,7 +361,7 @@ function SemantifyIt(key)
                     var fullurl = url;
 
                     /* determine function name automatically by type and call it */
-                    return obj[type.toLowerCase()].call(obj, fullurl, params);
+                    return obj[type.toLowerCase()].call(obj, fullurl, params, callback);
 
                 } catch (/*Error*/ e) {
                     if(error){
@@ -391,10 +398,10 @@ function SemantifyIt(key)
      *
      * @return array
      */
-    this.getAnnotationList = function ()
+    this.getAnnotationList = function (callback)
     {
 
-        var json = transport("GET", "annotation/list/"  + "" +  this.getWebsiteApiKey());
+        var json = transport("GET", "annotation/list/"  + "" +  this.getWebsiteApiKey(),undefined,callback);
 
         return json;
     };
@@ -406,12 +413,12 @@ function SemantifyIt(key)
      *
      * @return array
      */
-    this.postAnnotation = function (json)
+    this.postAnnotation = function (json,callback)
     {
 
         var params = new Array();
         params["content"] = json;
-        json = transport("POST", "annotation/"  +   this.getWebsiteApiKey(), params);
+        json = transport("POST", "annotation/"  +   this.getWebsiteApiKey(), params,callback);
 
 
         return json;
@@ -427,11 +434,11 @@ function SemantifyIt(key)
      * @param $uid
      * @return string
      */
-    this.updateAnnotation = function (json, uid)
+    this.updateAnnotation = function (json, uid, callback)
     {
         var params = new Array();
         params["content"] = json;
-        json = transport("PATCH", "annotation/" + "" + uid + "" + "/"  + "" + this.getWebsiteApiKey(), params);
+        json = transport("PATCH", "annotation/" + "" + uid + "" + "/"  + "" + this.getWebsiteApiKey(), params, callback);
 
 
         return json;
@@ -447,9 +454,9 @@ function SemantifyIt(key)
      * @param $url
      * @return string
      */
-    this.getAnnotationByURL = function (url)
+    this.getAnnotationByURL = function (url,callback)
     {
-        return transport("GET", "annotation/url/"  + "" +  rawurlencode(url));
+        return transport("GET", "annotation/url/"  + "" +  rawurlencode(url),callback);
     };
 
 
@@ -461,10 +468,10 @@ function SemantifyIt(key)
      * @param string $id
      * @return json
      */
-    this.getAnnotation = function (id)
+    this.getAnnotation = function (id, callback)
     {
 
-        return transport("GET", "annotation/short/"  + "" +  id);
+        return transport("GET", "annotation/short/"  + "" +  id, callback);
 
     };
 
