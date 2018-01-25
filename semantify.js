@@ -244,7 +244,7 @@ function SemantifyIt(key)
                 type: type,
                 dataType: 'json',
                 data: params_string,
-                contentType: "application/json",
+                contentType: "application/json ; charset=utf-8",
                 beforeSend: function(xhr) {
                     //xhr.setRequestHeader("Authentication", "Basic ZnJvbWFwcGx********uOnRoM24zcmQ1UmgzcjM=") //Some characters have been replaced for security but this is a true BASE64 of "username:password"
                 },
@@ -361,7 +361,13 @@ function SemantifyIt(key)
                     var fullurl = url;
 
                     /* determine function name automatically by type and call it */
-                    return obj[type.toLowerCase()].call(obj, fullurl, params, callback);
+                    if(type=="POST"){
+                        post(obj, fullurl, params, callback);
+                    }
+
+                    if(type=="PATCH"){
+                        patch(obj, fullurl, params, callback);
+                    }
 
                 } catch (/*Error*/ e) {
                     if(error){
