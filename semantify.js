@@ -279,11 +279,11 @@ function SemantifyIt(key)
 
                     /* determine function name automatically by type and call it */
                     if(type=="POST"){
-                        post( fullurl, params, headers, callback);
+                        return post( fullurl, params, headers, callback);
                     }
 
                     if(type=="PATCH"){
-                        patch( fullurl, params, headers, callback);
+                        return patch( fullurl, params, headers, callback);
                     }
 
                 } catch (/*Error*/ e) {
@@ -420,8 +420,8 @@ function SemantifyIt(key)
                 },
                 error: function (request, status, error) {
                     response = request.responseText;
-                    if(error){
-                        throw new Error('Ajax error: '  +  request.responseText);
+                    if(request.status==404){
+                        throw new Error('Ajax error: '  +  response);
                     }
                 }
             });
