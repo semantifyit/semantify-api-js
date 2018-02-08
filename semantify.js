@@ -395,7 +395,7 @@ function SemantifyIt(key)
 
             jQuery.ajax({
                 url: url,
-                async: true,
+                async: false,
                 type: type,
                 data: params_string,
                 contentType: contentType,
