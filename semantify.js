@@ -419,6 +419,7 @@ function SemantifyIt(key)
                     }
                 },
                 error: function (request, status, error) {
+                    response = request.responseText;
                     if(error){
                         throw new Error('Ajax error: '  +  request.responseText);
                     }
