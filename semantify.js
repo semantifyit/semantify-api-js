@@ -3,31 +3,37 @@
  * Class SemantifyIt
  */
 
-function SemantifyIt(key)
+function SemantifyIt(key, secret)
 {
-
+    /** for calling self methods */
+    var self = this;
 
     /**
      * variable for websiteApiKey
      *
      * @param string $websiteApiKey ;
      */
-    var websiteApiKey;
+    this.websiteApiKey = undefined;
+
+    /**
+     * website secret
+     */
+    this.websiteApiSecret = undefined;
 
     /**
      * variables for some api settings
      *
      * @param string $websiteKey ;
      */
-    var live_server = "https://semantify.it";
+    this.live_server = "https://semantify.it";
 
-    var staging_server = "https://staging.semantify.it";
+    this.staging_server = "https://staging.semantify.it";
 
-    var api_path = "api";
+    this.api_path = "api";
 
-    var live = true;
+    this.live = 0;
 
-    var jquery = true;
+    this.jquery = true;
 
     /**
      *
@@ -38,7 +44,7 @@ function SemantifyIt(key)
      *
      * @var boolean
      */
-    var error = false;
+    this.error = false;
 
     /**
      *
@@ -49,8 +55,8 @@ function SemantifyIt(key)
      *
      * @var boolean
      */
-    var debug = false;
-    var step = 0;
+    this.debug = false;
+    this.step = 0;
 
     /**
      * Checking for jquery
@@ -59,7 +65,7 @@ function SemantifyIt(key)
      */
 
     if(!jQuery) {
-        jquery = false;
+        self.jquery = false;
     }
 
 
@@ -67,25 +73,22 @@ function SemantifyIt(key)
      * Setters and getters
      * */
 
-
     /**
      * @return int
      */
     this.getLive = function ()
     {
-        return live;
+        return self.live;
     };
 
 
     /**
      * @param int $live
      */
-    this.setLive = function (live2)
+    this.setLive = function (live)
     {
-        live = live2;
+        self.live = live;
     };
-
-
 
 
     /**
@@ -96,7 +99,7 @@ function SemantifyIt(key)
      */
     this.getError = function ()
     {
-        return error;
+        return self.error;
     };
 
 
@@ -108,9 +111,9 @@ function SemantifyIt(key)
      *
      * @param boolean $error
      */
-    this.setError = function (error2)
+    this.setError = function (error)
     {
-        error = error2;
+        self.error = error;
     };
 
 
@@ -122,23 +125,46 @@ function SemantifyIt(key)
     this.getWebsiteApiKey = function ()
     {
         //return ""
-        if ((error) && ((websiteApiKey=="") || (websiteApiKey=="0"))){
+        if ((self.error) && ((self.websiteApiKey==="") || (self.websiteApiKey==="0"))){
             throw new Error("Caught problem: no API key saved!");
         }
-        return websiteApiKey;
+        return self.websiteApiKey;
     };
 
+    /**
+     * getter for websiteApiKey
+     *
+     * @return string
+     */
+    this.getWebsiteApiSecret = function ()
+    {
+        //return ""
+        if ((self.error) && ((self.websiteApiSecret==="") || (self.websiteApiSecret==="0"))){
+            throw new Error("Caught problem: no API secret saved!");
+        }
+        return self.websiteApiSecret;
+    };
 
     /**
      * setter for websiteApiKey
      *
      * @param string $websiteApiKey
      */
-    this.setWebsiteApiKey = function (websiteApiKey2)
+    this.setWebsiteApiKey = function (websiteApiKey)
     {
-        websiteApiKey = websiteApiKey2;
+        self.websiteApiKey = websiteApiKey;
     };
 
+
+    /**
+     * setter for websiteApiSecret
+     *
+     * @param string $websiteApiSecret
+     */
+    this.setWebsiteApiSecret = function (websiteApiSecret)
+    {
+        self.websiteApiSecret = websiteApiSecret;
+    };
 
     /**
      * SemantifyIt constructor.
@@ -146,23 +172,35 @@ function SemantifyIt(key)
      * @param string $key
      */
 
-
     if(typeof key === "undefined"){
         key = "";
     }
 
-    if (key != "") {
-        this.setWebsiteApiKey(key);
+    if (key !== "") {
+        self.setWebsiteApiKey(key);
     }
 
+    if(typeof secret === "undefined"){
+        secret = "";
+    }
+
+    if (secret !== "") {
+        self.setWebsiteApiSecret(secret);
+    }
+   
 
 
 
+    /**
+     * Classes methods
+     * Cake is a lie!
+     *
+     * */
 
 
     function isContentAvailable (input)
     {
-        if ((input == "") || (input == false) || (strpos(input, 'error') !== false)) {
+        if ((input === "") || (input === false) || (strpos(input, 'error') !== false)) {
             return false;
         }
 
@@ -174,7 +212,7 @@ function SemantifyIt(key)
 
         debugMe(params);
 
-        if(jquery){
+        if(self.jquery){
            return jQuery.param(params);
         }else{
             var esc = encodeURIComponent;
@@ -186,9 +224,9 @@ function SemantifyIt(key)
 
 
     function debugMe(text){
-        if(debug){
-            step++;
-            console.log("step: "+ step + " text: "+ text+" function: "+ arguments.callee.caller.toString());
+        if(self.debug){
+            self.step++;
+            console.log("step: "+ self.step + " text: "+ text+" function: "+ arguments.callee.caller.toString());
         }
     }
 
@@ -214,11 +252,11 @@ function SemantifyIt(key)
         }
 
         /** url with server and path */
-        var url = live_server  + '/' + api_path + '/'  +  path;
+        var url = self.live_server  + '/' + self.api_path + '/'  +  path;
 
         / * if it is in staging server than switch to staging api */
-        if (live == false) {
-            url = staging_server + '/' + api_path  +  '/' +  path;
+        if (self.live === false) {
+            url = self.staging_server + '/' + self.api_path  +  '/' +  path;
         }
 
         //console.log(settings);
@@ -229,9 +267,9 @@ function SemantifyIt(key)
             if((settings.noApiPath !== "undefined") && (settings.noApiPath)){
 
                 noApiPath = true;
-                url = live_server + '/' + path;
-                if (live == false) {
-                    url = staging_server + '/' + path;
+                url = self.live_server + '/' + path;
+                if (self.live === false) {
+                    url = self.staging_server + '/' + path;
                 }
 
             }
@@ -264,7 +302,7 @@ function SemantifyIt(key)
 
                 } catch (/*Error*/ e) {
 
-                    if(error){
+                    if(self.error){
                         throw new Error('GET Transport Caught exception: '  +  e.message );
                     }
 
@@ -287,7 +325,7 @@ function SemantifyIt(key)
                     }
 
                 } catch (/*Error*/ e) {
-                    if(error){
+                    if(self.error){
                         throw new Error('POST/PATCH Transport Caught exception: '  +  e.message );
                     }
 
@@ -389,9 +427,11 @@ function SemantifyIt(key)
                 break;
         }
 
+        //console.log(headers);
 
-
-        if(jquery){
+        if(self.jquery){
+            console.log("ajax",url);
+            console.log("ajax",headers);
 
             jQuery.ajax({
                 url: url,
@@ -410,18 +450,16 @@ function SemantifyIt(key)
                     }
                 },
                 success: function(data){
-                    response = data;
-                    if(callback!==undefined){
-                        if (typeof callback === "function") {
-                            //console.log(data)
-                            callback(data);
-                        }
-                    }
+                    console.log("success",data);
+                    self.callbackHandler(callback, data);
+
                 },
                 error: function (request, status, error) {
                     response = request.responseText;
-                    if(request.status==404){
-                        throw new Error('Ajax error: '  +  response);
+                    console.log("error",request);
+                    self.callbackHandler(callback, response);
+                    if(request.status===404){
+                        throw new Error('Semantify Ajax error: '  +  response);
                     }
                 }
             });
@@ -436,6 +474,32 @@ function SemantifyIt(key)
     }
 
 
+    /**
+     *
+     * function for handlig callbacks scopes
+     *
+     * @param callback, response
+     */
+    this.callbackHandler = function (callback, response) {
+        if (typeof callback !== "undefined") {
+            try {
+                /* local scope */
+                callback(response);
+            }
+            catch (e) {
+                try {
+                    /* global scope */
+                    window[callback](response);
+                }
+                catch (e) {
+                    /* if no function than we return what we received */
+                    console.log(callback + " is not a function "+ e.message);
+                    return false;
+                }
+            }
+        }
+        /* if no function than we return what we received */
+    }
 
     /**
      *
@@ -471,7 +535,9 @@ function SemantifyIt(key)
      */
     this.postAnnotation = function (json,callback)
     {
-        return transport("POST", "annotation/"  +   this.getWebsiteApiKey(), json, callback);
+        var secret = self.getWebsiteApiSecret();
+        settings.headers = {'website-secret': '' + secret};
+        return transport("POST", "annotation/"  +   this.getWebsiteApiKey(), json, callback, settings);
     };
 
 
@@ -498,9 +564,10 @@ function SemantifyIt(key)
      * @param $uid
      * @return string
      */
-    this.saveAnnotationToWebsite = function (json, Apikey, callback)
+    this.saveAnnotationToWebsite = function (json, apikey, secret,  callback)
     {
-        return transport("POST", "annotation/"  +  Apikey, json, callback);
+        settings.headers = {'website-secret': '' + secret};
+        return transport("POST", "annotation/"  +  apikey, json, callback, settings);
     };
 
 
