@@ -535,6 +535,7 @@ function SemantifyIt(key, secret)
      */
     this.postAnnotation = function (json,callback)
     {
+        var settings = {};
         var secret = self.getWebsiteApiSecret();
         settings.headers = {'website-secret': '' + secret};
         return transport("POST", "annotation/"  +   this.getWebsiteApiKey(), json, callback, settings);
@@ -566,6 +567,7 @@ function SemantifyIt(key, secret)
      */
     this.saveAnnotationToWebsite = function (json, apikey, secret,  callback)
     {
+        var settings = {};
         settings.headers = {'website-secret': '' + secret};
         return transport("POST", "annotation/"  +  apikey, json, callback, settings);
     };
