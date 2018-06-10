@@ -559,7 +559,7 @@ function SemantifyIt(key, secret)
 
     /**
      *
-     * save annotaion
+     * save annotaion to website by defined key and secret
      *
      * @param $json
      * @param $uid
