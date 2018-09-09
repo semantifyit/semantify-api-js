@@ -553,7 +553,10 @@ function SemantifyIt(key, secret)
      */
     this.updateAnnotation = function (json, uid, callback)
     {
-        return transport("PATCH", "annotation/" + "" + uid + "" + "/"  + "" + this.getWebsiteApiKey(), json, callback);
+        var settings = {};
+        var secret = self.getWebsiteApiSecret();
+        settings.headers = {'website-secret': '' + secret};
+        return transport("PATCH", "annotation/uid/" + uid, json, callback, settings);
     };
 
 
