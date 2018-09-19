@@ -688,6 +688,21 @@ function SemantifyIt(key, secret)
         return transport("GET", "website/", undefined, callback, settings);
     };
 
+
+    /**
+     *
+     * Validate of annotation
+     *
+     */
+
+
+    this.validateAnnotation = function (annotation, callback){
+
+        return transport("POST", "validate/annotation", annotation, callback);
+    }
+
+
+
 }
 
 
