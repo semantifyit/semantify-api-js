@@ -298,7 +298,7 @@ function SemantifyIt(key, secret)
                         fullurl = url;
                     }
 
-                    return get(fullurl, headers, callback);
+                    return get(fullurl, headers, callback, settings);
 
                 } catch (/*Error*/ e) {
 
@@ -317,11 +317,11 @@ function SemantifyIt(key, secret)
 
                     /* determine function name automatically by type and call it */
                     if(type=="POST"){
-                        return post( fullurl, params, headers, callback);
+                        return post( fullurl, params, headers, callback, settings);
                     }
 
                     if(type=="PATCH"){
-                        return patch( fullurl, params, headers, callback);
+                        return patch( fullurl, params, headers, callback, settings);
                     }
 
                 } catch (/*Error*/ e) {
@@ -339,11 +339,11 @@ function SemantifyIt(key, secret)
         }
     }
 
-    function get(url, headers, callback)
+    function get(url, headers, callback, settings)
     {
 
         //if allow url fopen is allowed we will use file_get_contents otherwise curl
-        var content = curl("GET", url, undefined, headers, callback);
+        var content = curl("GET", url, undefined, headers, callback, settings);
 
         //console.log(content);
 
@@ -359,11 +359,11 @@ function SemantifyIt(key, secret)
 
     }
 
-    function post(url, params, headers, callback)
+    function post(url, params, headers, callback, settings)
     {
 
         var action = "POST";
-        var content = curl(action, url, params, headers, callback);
+        var content = curl(action, url, params, headers, callback, settings);
 
         if (content === false) {
             throw new Error('Error posting content to '  + "" +  url);
@@ -381,7 +381,7 @@ function SemantifyIt(key, secret)
     function patch(url, params, headers, callback)
     {
         var action = "PATCH";
-        var content = curl(action, url, params, headers, callback);
+        var content = curl(action, url, params, headers, callback, settings);
 
         if (content === false) {
             throw new Error('Error patching content to '  + "" +  url);
@@ -411,14 +411,22 @@ function SemantifyIt(key, secret)
      */
 
 
-    function curl (type, url, params, headers, callback)
+    function curl (type, url, params, headers, callback, settings)
     {
         var response = "";
         var params_string = null;
+        var timeout = 2000;
 
         if(typeof params !== "undefined"){
             params_string = JSON.stringify(params);
         }
+
+        if(typeof settings !== "undefined") {
+            if ((settings.timeout !== "undefined")) {
+                timeout = settings.timeout;
+            }
+        }
+
 
         var contentType = null;
         switch (type){
@@ -430,12 +438,13 @@ function SemantifyIt(key, secret)
         //console.log(headers);
 
         if(self.jquery){
-            console.log("ajax",url);
-            console.log("ajax",headers);
+            console.log("ajax url",url);
+            console.log("ajax headers",headers);
 
             jQuery.ajax({
                 url: url,
-                async: false,
+                async: true,
+                timeout: timeout,
                 type: type,
                 data: params_string,
                 contentType: contentType,
@@ -452,7 +461,6 @@ function SemantifyIt(key, secret)
                 success: function(data){
                     console.log("success",data);
                     self.callbackHandler(callback, data);
-
                 },
                 error: function (request, status, error) {
                     response = request.responseText;
@@ -694,12 +702,33 @@ function SemantifyIt(key, secret)
      * Validate of annotation
      *
      */
-
-
     this.validateAnnotation = function (annotation, callback){
-
         return transport("POST", "validate/annotation", annotation, callback);
     }
+
+    /**
+     *
+     * retrieve of html
+     *
+     */
+    this.retrieveHtml = function (urlInJson, callback){
+        var settings = {};
+        settings.timeout = 15000;
+        return transport("POST", "retrieve/html", urlInJson, callback, settings);
+    }
+
+    /**
+     *
+     * extractJsonld
+     *
+     */
+    this.extractJsonld = function (htmlInJSON, callback){
+        var settings = {};
+        settings.timeout = 15000;
+        return transport("POST", "extract/jsonld", htmlInJSON, callback, settings);
+    }
+
+
 
 
 
