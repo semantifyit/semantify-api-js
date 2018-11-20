@@ -378,7 +378,7 @@ function SemantifyIt(key, secret)
 
     }
 
-    function patch(url, params, headers, callback)
+    function patch(url, params, headers, callback, settings)
     {
         var action = "PATCH";
         var content = curl(action, url, params, headers, callback, settings);
